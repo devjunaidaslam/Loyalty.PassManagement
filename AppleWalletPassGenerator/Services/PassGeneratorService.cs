@@ -38,7 +38,7 @@ namespace AppleWalletPassGenerator.Services
                  $"Loyalty ID: {loyaltyCardData.BarcodeMessage}" ));
 
 
-            request.AddPrimaryField(new StandardField("company", "Company Name", "FandeerCoffee"));
+            request.AddPrimaryField(new StandardField("company", "Company Name", _settings.OrganizationName));
 
             // Add loyalty points field with change message for visible notifications
             var loyaltyPointsField = new StandardField("loyalty-points", "Loyalty Points", loyaltyCardData.Points.ToString());
