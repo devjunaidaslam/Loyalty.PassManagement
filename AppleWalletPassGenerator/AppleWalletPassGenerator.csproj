@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dotnet-passbook" Version="4.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Data\AppleWWDRCAG4.cer" />
+    <None Include="wwwroot\Data\fandeer-pass.p12" />
+    <None Include="wwwroot\Data\Images\icon%402x.png" />
+    <None Include="wwwroot\Data\Images\icon%403x.png" />
+    <None Include="wwwroot\Data\Images\icon.png" />
+    <None Include="wwwroot\Data\Images\logo%402x.png" />
+    <None Include="wwwroot\Data\Images\logo%403x.png" />
+    <None Include="wwwroot\Data\Images\logo.png" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,52 @@
+### Generate a new pass
+POST https://localhost:7000/Pass/generate
+Content-Type: application/json
+
+{
+  "customerName": "John Doe",
+  "customerEmail": "john.doe@example.com",
+  "points": 100,
+  "barcodeMessage": "LOYALTY123456",
+  "qrCodeData": "LOYALTY_ABC12345"
+}
+
+### Update points for existing pass
+POST https://localhost:7000/Pass/update-points
+Content-Type: application/json
+
+{
+  "serialNumber": "your-serial-number-here",
+  "points": 250,
+  "deviceToken": "your-device-token-here"
+}
+
+### Get latest pass (called by Apple Wallet)
+GET https://localhost:7000/Pass/passes/your-serial-number-here
+
+### Register device for push notifications
+POST https://localhost:7000/Pass/passes/your-serial-number-here/registrations/your-device-token-here
+
+### Unregister device
+DELETE https://localhost:7000/Pass/passes/your-serial-number-here/registrations/your-device-token-here
+
+### Get pass log information
+GET https://localhost:7000/Pass/passes/your-serial-number-here/log
+
+### Example with actual data
+POST https://localhost:7000/Pass/generate
+Content-Type: application/json
+
+{
+  "customerName": "Jane Smith",
+  "customerEmail": "jane.smith@example.com",
+  "points": 50
+}
+
+### Update points for Jane's pass (replace with actual serial number from above)
+POST https://localhost:7000/Pass/update-points
+Content-Type: application/json
+
+{
+  "serialNumber": "replace-with-actual-serial-number",
+  "points": 150
+}
