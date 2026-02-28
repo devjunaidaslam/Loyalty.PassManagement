@@ -29,7 +29,7 @@ namespace AppleWalletPassGenerator.Services
 
         public async Task<bool> SendPushNotificationAsync(string deviceToken, string passTypeId, string serialNumber)
         {
-            var p12File = Path.Combine(_env.WebRootPath, "Data", "fandeer-pass.p12");
+            var p12File = Path.Combine(_env.WebRootPath, "Data", "company-pass.p12");
             var cert = new X509Certificate2(p12File, "Aa0108534828@#$",
             X509KeyStorageFlags.MachineKeySet |
             X509KeyStorageFlags.PersistKeySet |

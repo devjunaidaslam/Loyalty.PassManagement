@@ -19,14 +19,14 @@ namespace AppleWalletPassGenerator.Models
         
         public string? QrCodeData { get; set; }
         
-        public string? DeviceToken { get; set; } // For push notifications
+        public string? DeviceToken { get; set; } 
 
-        public string? PushToken { get; set; } // To identify the type of pass
+        public string? PushToken { get; set; } 
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         
-        public int Version { get; set; } = 1; // For pass updates
+        public int Version { get; set; } = 1; 
     }
 }
