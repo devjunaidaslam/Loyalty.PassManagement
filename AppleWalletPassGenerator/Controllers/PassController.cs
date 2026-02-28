@@ -2,6 +2,7 @@ using AppleWalletPassGenerator.IServices;
 using AppleWalletPassGenerator.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 
 namespace AppleWalletPassGenerator.Controllers
@@ -15,17 +16,21 @@ namespace AppleWalletPassGenerator.Controllers
         private readonly IPassGeneratorService _passGenerationService;
         private readonly IPassDataService _passDataService;
         private readonly IPushNotificationService _pushNotificationService;
+        private readonly PassSettings _settings;
 
         public PassController(
             ILogger<PassController> logger, 
             IPassGeneratorService passGenerationService,
             IPassDataService passDataService,
-            IPushNotificationService pushNotificationService)
+            IPushNotificationService pushNotificationService,
+            IOptions<PassSettings> options
+            )
         {
             _logger = logger;
             _passGenerationService = passGenerationService;
             _passDataService = passDataService;
             _pushNotificationService = pushNotificationService;
+            _settings = options.Value;
         }
 
         [HttpPost("generate")]
@@ -49,7 +54,7 @@ namespace AppleWalletPassGenerator.Controllers
 
                 if (string.IsNullOrEmpty(cardData.BarcodeMessage))
                 {
-                    cardData.BarcodeMessage = serialNumber; // Use serial number as default barcode
+                    cardData.BarcodeMessage = serialNumber; 
                 }
 
                 if (string.IsNullOrEmpty(cardData.QrCodeData))
@@ -60,7 +65,7 @@ namespace AppleWalletPassGenerator.Controllers
                 _logger.LogInformation("Generating pass for customer {CustomerName} with serial {SerialNumber}",
                     cardData.CustomerName, serialNumber);
 
-                // Save pass data to database
+               
                 var passData = new PassData
                 {
                     SerialNumber = serialNumber,
@@ -73,13 +78,13 @@ namespace AppleWalletPassGenerator.Controllers
 
                 await _passDataService.CreatePassAsync(passData);
 
-                // Generate the pass
+               
                 var passBytes = await _passGenerationService.GeneratePassAsync(cardData , serialNumber);
 
-                // Return the pass file with proper headers for email attachment
+               
                 var fileName = $"loyalty-{serialNumber}.pkpass";
 
-                // Set proper headers for email attachment compatibility
+               
                 Response.Headers["Content-Disposition"] = $"attachment; filename=\"{fileName}\"";
                 Response.Headers["Content-Transfer-Encoding"] = "binary";
 
@@ -105,7 +110,7 @@ namespace AppleWalletPassGenerator.Controllers
                 _logger.LogInformation("Updating points for pass {SerialNumber} to {Points}", 
                     request.SerialNumber, request.Points);
 
-                // Update points in database
+            
                 var success = await _passDataService.UpdatePointsAsync(
                     request.SerialNumber, 
                     request.Points
@@ -116,20 +121,18 @@ namespace AppleWalletPassGenerator.Controllers
                     return NotFound($"Pass with serial number {request.SerialNumber} not found");
                 }
 
-                // Get the updated pass data
                 var passData = await _passDataService.GetPassBySerialNumberAsync(request.SerialNumber);
                 if (passData == null)
                 {
                     return NotFound($"Pass with serial number {request.SerialNumber} not found");
                 }
 
-                // Send push notification if device token is available
-                // This will trigger Apple Wallet to show a notification using the change message
+
                 if (!string.IsNullOrEmpty(passData.PushToken))
                 {
                     var pushSent = await _pushNotificationService.SendPushNotificationAsync(
-                        passData.PushToken, 
-                        "pass.com.fandeercoffee.app", // PassTypeIdentifier from settings
+                        passData.PushToken,
+                        _settings.PassTypeIdentifier, 
                         request.SerialNumber);
 
                     if (pushSent)
@@ -157,7 +160,6 @@ namespace AppleWalletPassGenerator.Controllers
             }
         }
 
-        // Apple Wallet Web Service Endpoints (following Apple's REST API standards)
         
         [HttpGet("v1/passes/{passTypeIdentifier}/{serialNumber}")]
         public async Task<IActionResult> GetPass(string passTypeIdentifier, string serialNumber )
@@ -178,7 +180,6 @@ namespace AppleWalletPassGenerator.Controllers
                     return NotFound($"Pass with serial number {serialNumber} not found");
                 }
 
-                // Convert PassData to LoyaltyCardData for pass generation
                 var loyaltyCardDto = new LoyaltyCardDto
                 {
                     CustomerName = passData.CustomerName,
@@ -188,10 +189,8 @@ namespace AppleWalletPassGenerator.Controllers
                     QrCodeData = passData.QrCodeData
                 };
 
-                // Generate the updated pass
                 var passBytes = await _passGenerationService.GeneratePassAsync(loyaltyCardDto , serialNumber);
 
-                // Return the pass file
                 var fileName = $"loyalty-{serialNumber}.pkpass";
                 return File(passBytes, "application/vnd.apple.pkpass", fileName);
             }
@@ -293,7 +292,6 @@ namespace AppleWalletPassGenerator.Controllers
                     return NotFound($"Pass with serial number {serialNumber} not found");
                 }
 
-                // Clear device token if it matches
                 if (passData.DeviceToken == deviceLibraryIdentifier)
                 {
                     passData.DeviceToken = null;
@@ -328,7 +326,6 @@ namespace AppleWalletPassGenerator.Controllers
                     return NotFound($"Pass with serial number {serialNumber} not found");
                 }
 
-                // Return pass log information
                 return Ok(new
                 {
                     serialNumber = passData.SerialNumber,

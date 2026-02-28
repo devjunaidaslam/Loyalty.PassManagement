@@ -5,19 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.Configure<PassSettings>(builder.Configuration.GetSection("PassSettings"));
 
-// Add database context
 builder.Services.AddDbContext<PassDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add services
 builder.Services.AddScoped<IPassGeneratorService, PassGeneratorService>();
 builder.Services.AddScoped<IPassDataService, PassDataService>();
 builder.Services.AddScoped<IPushNotificationService, PushNotificationService>();
 
-// Add HttpClient for push notifications
 builder.Services.AddHttpClient<IPushNotificationService, PushNotificationService>();
 
 builder.Services.AddControllers();
@@ -40,7 +36,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Ensure database is created
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<PassDbContext>();

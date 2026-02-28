@@ -39,15 +39,14 @@ namespace AppleWalletPassGenerator.Services
             handler.ClientCertificates.Add(cert);
 
             using var client = new HttpClient(handler);
-            client.DefaultRequestVersion = new Version(2, 0); // Use HTTP/2
+            client.DefaultRequestVersion = new Version(2, 0); 
 
             var url = $"https://api.push.apple.com/3/device/{deviceToken}";
 
             var request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.Version = new Version(2, 0); // HTTP/2
+            request.Version = new Version(2, 0); 
             request.Headers.Add("apns-topic", passTypeId);
 
-            // Wallet pass notifications use empty payload - the visible notification comes from change messages
             request.Content = new StringContent("{}", System.Text.Encoding.UTF8, "application/json");
 
             try

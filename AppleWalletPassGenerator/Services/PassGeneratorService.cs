@@ -40,7 +40,6 @@ namespace AppleWalletPassGenerator.Services
 
             request.AddPrimaryField(new StandardField("company", "Company Name", _settings.OrganizationName));
 
-            // Add loyalty points field with change message for visible notifications
             var loyaltyPointsField = new StandardField("loyalty-points", "Loyalty Points", loyaltyCardData.Points.ToString());
             loyaltyPointsField.ChangeMessage = "Your loyalty points have been updated to %@!";
             request.AddSecondaryField(loyaltyPointsField);
@@ -57,7 +56,6 @@ namespace AppleWalletPassGenerator.Services
             request.WebServiceUrl = _settings.WebServiceURL;
             request.AuthenticationToken = _settings.AuthenticationToken;
 
-            // Make a GET request to the URL and retrieve the image data
             request.Images.Add(PassbookImage.Icon, await LoadImageAsync("Data/Images/icon.png"));
             request.Images.Add(PassbookImage.Icon2X, await LoadImageAsync("Data/Images/icon@2x.png"));
             request.Images.Add(PassbookImage.Icon3X, await LoadImageAsync("Data/Images/icon@3x.png"));
@@ -71,7 +69,6 @@ namespace AppleWalletPassGenerator.Services
 
         private async Task<byte[]> LoadImageAsync(string relativePath)
         {
-            // Uses ContentRootPath (root of project) since Data is not in wwwroot
             var fullPath = Path.Combine(_env.WebRootPath, relativePath);
 
             if (!File.Exists(fullPath))
