@@ -71,10 +71,6 @@ Loyalty.PassManagement/
 
 Contributions are welcome. Please follow the existing code style and include tests for new features.
 
-## License
-
-[Add your license here]
-
 ## Support
 
 For issues, feature requests, or questions, please open an issue in the repository or contact the development team.
